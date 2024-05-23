@@ -1,0 +1,51 @@
+POST http://localhost:9001/routes
+Content-Type: application/json
+
+{
+            "id": "A_route",
+            "uri": "lb://SIMPLECLIENTA",
+            "predicates": [
+                {
+                    "name": "Path",
+                    "args": {
+                        "_genkey_0": "/simpleA/**"
+                    }
+                }
+            ],
+            "filters": [
+                {
+                    "name": "RewritePath",
+                    "args": {
+                        "regexp": "/simpleA/(?<segment>.*)",
+                        "replacement": "/${segment}"
+                    }
+                }
+            ]
+        }
+
+###
+
+POST http://localhost:9001/routes
+Content-Type: application/json
+
+{
+  "id": "B_route",
+  "uri": "lb://SIMPLECLIENTB",
+  "predicates": [
+    {
+      "name": "Path",
+      "args": {
+        "_genkey_0": "/simpleB/**"
+      }
+    }
+  ],
+  "filters": [
+    {
+      "name": "RewritePath",
+      "args": {
+        "regexp": "/simpleB/(?<segment>.*)",
+        "replacement": "/${segment}"
+      }
+    }
+  ]
+}
