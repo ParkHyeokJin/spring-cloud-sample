@@ -4,6 +4,10 @@ spring:
 logging:
   level:
     org.springframework.cloud.gateway: TRACE
+  cloud:
+    circuitbreaker:
+      resilience4j:
+        enabled: true
 
 eureka:
   client:

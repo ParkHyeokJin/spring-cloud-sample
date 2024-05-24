@@ -21,7 +21,16 @@ public class GatewayConfig {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("default_route", r -> r.path("/default/**")
-                        .uri("http://example.com"))
+                        .filters(f -> f.rewritePath("/default/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://SIMPLECLIENTA"))
+                .route("circuitbreaker_route", r -> r.path("/circuit/**")
+                        .filters(f -> f.circuitBreaker(c -> c.setName("myCircuitBreaker").setFallbackUri("forward:/circuitbreakerfallback").addStatusCode("INTERNAL_SERVER_ERROR"))
+                                .rewritePath("/circuit/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://SIMPLECLIENTA"))
+                .route("retry_route", r -> r.path("/retry/**")
+                        .filters(f -> f.retry(3).rewritePath("/default/(?<segment>.*)", "/${segment}"))
+                                .uri("lb://SIMPLECLIENTA")
+                )
                 .build();
     }
 

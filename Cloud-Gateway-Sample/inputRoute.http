@@ -49,3 +49,80 @@ Content-Type: application/json
     }
   ]
 }
+
+###
+
+POST http://localhost:9001/routes
+Content-Type: application/json
+
+{
+  "id": "circuitbreaker_route",
+  "uri": "lb://SIMPLECLIENTA",
+  "predicates": [
+    {
+      "name": "Path",
+      "args": {
+        "_genkey_0": "/circuitbreaker/**"
+      }
+    }
+  ],
+  "filters": [
+    {
+      "name": "CircuitBreaker",
+      "args": {
+        "name": "defaultCB",
+        "fallbackUri": "forward:/circuitbreakerfallback"
+      }
+    },
+    {
+      "name": "RewritePath",
+      "args": {
+        "regexp": "/circuitbreaker/(?<segment>.*)",
+        "replacement": "/${segment}"
+      }
+    }
+  ]
+}
+
+###
+
+POST http://localhost:9001/routes
+Content-Type: application/json
+
+{
+  "id": "retry_route",
+  "uri": "lb://SIMPLECLIENTC",
+  "predicates": [
+    {
+      "name": "Path",
+      "args": {
+        "_genkey_0": "/retry/**"
+      }
+    }
+  ],
+  "filters": [
+    {
+      "name": "Retry",
+      "args": {
+        "retries": "3",
+        "statuses": "BAD_GATEWAY",
+        "methods": "GET,POST",
+        "firstBackoff": "10ms",
+        "maxBackoff": "50ms",
+        "factor": "2",
+        "basedOnPreviousValue": "false"
+      }
+    },
+    {
+      "name": "RewritePath",
+      "args": {
+        "regexp": "/retry/(?<segment>.*)",
+        "replacement": "/${segment}"
+      }
+    }
+  ]
+}
+
+###
+
+DELETE http://localhost:9001/routes/retry_route
