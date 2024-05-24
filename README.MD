@@ -39,17 +39,18 @@
 
 * 비교
 
-| 특징      |	Envoy	|Spring Cloud Gateway|
-|---------|---|---|
-| 언어      |	C++|	Java|
-| 성능      |	매우 높음|	적당함|
-| 설정 및 구성 |	YAML, 동적 API|	YAML, Java 코드|
-| 주요 통합   |	Istio, 서비스 메쉬|	Spring Boot, Spring Cloud|
-| 로드 밸런싱  |	고급 기능|	기본 기능 (Spring Cloud LoadBalancer)|
-| 확장성     |	필터, 플러그인|	커스텀 필터, 프레디케이트|
-| 관찰 가능성  |	고급 모니터링 및 로깅|	기본 모니터링 (Spring Boot Actuator)|
-| 사용 사례   |	대규모 마이크로서비스, 고성능 요구|	Spring 애플리케이션, 간단한 API Gateway|
-
+| 특징      | 	Envoy	                                           | Spring Cloud Gateway               |
+|---------|---------------------------------------------------|------------------------------------|
+| 언어      | 	C++                                              | 	Java                              |
+| 성능      | 	매우 높음                                            | 	적당함                               |
+| 설정 및 구성 | 	YAML, 동적 API                                     | 	YAML, Java 코드                     |
+| 주요 통합   | 	Istio, 서비스 메쉬                                    | 	Spring Boot, Spring Cloud         |
+| 로드 밸런싱  | 	고급 기능                                            | 	기본 기능 (Spring Cloud LoadBalancer) |
+| 확장성     | 	필터, 플러그인                                         | 	커스텀 필터, 프레디케이트                    |
+| 관찰 가능성  | 	고급 모니터링 및 로깅                                     | 	기본 모니터링 (Spring Boot Actuator)    |
+| 사용 사례   | 	대규모 마이크로서비스, 고성능 요구                              | 	Spring 애플리케이션, 간단한 API Gateway    |
+| 지원 프로토콜 | http/1.1 , http/2, websocket, gRpc, tcp, udp .... | http/1.1, http/2, gRpc, websocket  |
+| LB      | L3, L4, L7                                        | ㅣL4, L7                            |
 * SpringCloud Architecture
 
 ![SpringCloud Architecture](https://github.com/ParkHyeokJin/CodingTestRepo/assets/19565772/e070ec12-cd00-46ef-a818-04333437d990)
