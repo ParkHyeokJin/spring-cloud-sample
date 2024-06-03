@@ -1,0 +1,75 @@
+buildscript {
+    ext {
+        protobufVersion = '3.25.1'
+        protobufPluginVersion = '0.8.14'
+        grpcVersion = '1.58.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.5'
+    id 'com.google.protobuf' version '0.9.4'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //add gRpc lib
+    implementation 'net.devh:grpc-client-spring-boot-autoconfigure:2.15.0.RELEASE'
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+    clean {
+        delete generatedFilesBaseDir
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc{}
+        }
+    }
+}
+
+// Custom task to replace javax.annotation.Generated with jakarta.annotation.Generated
+task replaceAnnotations {
+    description = 'Replace javax.annotation.Generated with jakarta.annotation.Generated'
+    group = 'build'
+
+    doLast {
+        fileTree(layout.buildDirectory.dir("generated/source/proto/main")).matching {
+            include '**/*.java'
+        }.each { File file ->
+            def text = file.text
+            text = text.replace('javax.annotation.Generated', 'jakarta.annotation.Generated')
+            file.text = text
+        }
+    }
+}
+
+compileJava.dependsOn replaceAnnotations
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

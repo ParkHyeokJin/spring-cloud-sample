@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_package = "com.example.grpcserver";
+option java_multiple_files = true;
+
+package com.example.grpcserver;
+
+message Request {
+  enum TOperation {
+    ADD = 0;
+    SUBTRACT = 1;
+    MULTIPLY = 2;
+    DIVIDE = 3;
+  }
+
+  int32 a = 1;
+  int32 b = 2;
+  TOperation op = 3;
+}
+
+message Response {
+  int32 num = 1;
+}
+
+service CalculatorService {
+  rpc Calculator(Request) returns (Response) {}
+}
