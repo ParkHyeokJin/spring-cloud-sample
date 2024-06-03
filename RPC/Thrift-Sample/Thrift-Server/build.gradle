@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.projectlombok:lombok:1.18.28'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //add thrift lib
+    implementation 'org.apache.thrift:libthrift:0.20.0'
+}
+
+
+task compileThrift(type: Exec) {
+    description = 'Compile Thrift files'
+    group = 'build'
+
+    inputs.dir(layout.projectDirectory.dir("src/main/thrift"))
+    outputs.dir(layout.buildDirectory.dir("generated-sources/thrift"))
+
+    commandLine 'thrift', '--gen', 'java', '-out', layout.buildDirectory.dir("generated-sources/thrift").get().asFile, 'src/main/thrift/calculate.thrift'
+}
+
+task replaceAnnotations {
+    description = 'Replace javax.annotation.Generated with jakarta.annotation.Generated'
+    group = 'build'
+
+    doLast {
+        fileTree(layout.buildDirectory.dir("generated-sources/thrift")).matching {
+            include '**/*.java'
+        }.each { File file ->
+            def text = file.text
+            text = text.replace('javax.annotation.Generated', 'jakarta.annotation.Generated')
+            file.text = text
+        }
+    }
+}
+
+compileJava.dependsOn compileThrift
+compileJava.dependsOn replaceAnnotations
+
+sourceSets.main.java.srcDirs += layout.buildDirectory.dir("generated-sources/thrift").get().asFile
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
